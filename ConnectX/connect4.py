@@ -69,17 +69,75 @@ def checkWin(player = 1, coinsInaRow = 4):#full bourin
                     #print("||||||||||XXXXXXX|||||||||||||||")
                     #print("||||||||||X WON X|||||||||||||||")
                     #print("||||||||||XXXXXXX|||||||||||||||")
-                    return(True, chainLength, x_shift, y_shift, row, col)                    
+                    return(True, chainLength, x_shift, y_shift, row, col)
     return(False, chainLength)
 
 def playerChainsStats(player = 1):
     return 0
 
 
-def getReward(player = 1):
+def getReward(move, player = 1):
+    """
+        Calculate reward based on neighbouring coins
+        and chains involve.
+        enemy neighbours -> +1
+        chains involved -> +(4/3)*len(chain) for every chain.
+
+        Note we can tweak the parameters to make it more proactive or defensive
+    """
+    #default value
     reward = 0
-    reward += maxChain - self.prev_maxChain
-    reward -= Opp_maxChain - self.prev_opp_maxChain
+
+    col = move
+    row = board.shape[0]-len(np.trim_zeros(np.flip(board[:,move])))
+    #check if the player corresponds to the move provided
+    if (int(board[row, col]) == player):
+        for x_shift, y_shift in [(0,1),(0,-1),(1,0),(1,1),(1,-1),(-1,1),(-1,-1)]:#-1,0 is not needed to check as it will always be empty (there cannot be a coin above your last move)
+            #x1, y1 = row, col
+            x2, y2 = row+x_shift, col+y_shift
+            #x_check, y_check = row+x_shift, col+y_shift
+            if (checkInsideBoard(x2, y2)):
+                #MY CHAINS : First checking the involved chains.
+                if(int(board[x2, y2]) == player and (y_shift == 1 or (y_shift == 0 and x_shift == 1))):#as we alternate we check half of the possibilities.
+                    alternate = True#to check both sides
+                    chainLen = 2
+                    while(alternate == True):
+                        x_shift, y_shift = x_shift*-chainLen , y_shift*-chainLen
+                        x2, y2 = row+x_shift, col+y_shift
+                        if (checkInsideBoard(x2, y2)):
+                            if(int(board[x2, y2]) == player):
+                                chainLen += 1
+                            else:
+                                alternate = False
+                    x_shift, y_shift = x_shift*-chainLen , y_shift*-chainLen
+                    checking = True
+                    while(checking):
+                        x2, y2 = row+x_shift, col+y_shift
+                        if (checkInsideBoard(x2, y2)):
+                            if(int(board[x2, y2]) == player):
+                                chainLen += 1
+                            else:
+                                checking = False
+                        else:
+                            checking = False
+
+                    #we weight more chains than blocking in order to orient toward proactivity rather than blocking.
+                    reward += chainLen*4/3
+
+                    #count chains
+                else:
+                    #NEIGHBOURING COINS : Check Neighbouring coins.
+                    reward += (lambda x: -1 if x != player else 0)(board[x2, y2])
+
+    print("REWARD", reward)
+    return (reward)
+
+
+
+
+
+
+
 
 
 board = createBoard()
@@ -90,24 +148,26 @@ import random
 for i in range(20):
     #play(2)
     #printBoard()
-    play(random.randint(0,6),1)
+    move_1 = random.randint(0,6)
+    play(move_1,1)
     won = checkWin(player=1)
     if(won[0]==True):
         print("|||||||||| _1_ WON X|||||||||||||||")
+        last_move = move_1
+        print("last_mode : ", last_move)
         break
-    play(random.randint(0,6),2)
+    move_2 = random.randint(0,6)
+    play(move_2,2)
     won = checkWin(player=2)
     if(won[0]==True):
         print("|||||||||| _2_ WON X|||||||||||||||")
+        last_move = move_2
+        print("last_mode : ", last_move)
         break
 
-board = board-np.ones((6, 7))
-chainBoard = np.array(list(map(lambda x: max(x,0), board.flatten()))).reshape(6,7)
-
-from scipy.signal import convolve2d
-
-kernel_horiz = np.array([[-1,-1,-1],[2,2,2],[-1,-1,-1]])
-
+print(board)
+reward = getReward(last_move)
+print(reward)
 
 #chainBoard = np.ones((6, 7))
 
@@ -116,8 +176,8 @@ kernel_horiz = np.array([[-1,-1,-1],[2,2,2],[-1,-1,-1]])
 ##print(conv)
 #print(sum(list(map(lambda x: max(x,0), conv.flatten()))))
 #print("AAA\n",np.array(listBoard))
-#board = [x for x in board if (x>0) else 0]    
-print(chainBoard)
+#board = [x for x in board if (x>0) else 0]
+#print(chainBoard)
 
 #printBoard()
 #print(board.shape[1])
