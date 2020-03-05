@@ -19,7 +19,7 @@ from torchvision import transforms, models
 
 n_rows, n_cols = 5,6
 #number of the states the board can be in.
-n_states = int((lambda x,y : sum([factorial(x*y)/factorial(k) for k in np.arange(x*y +1)]))(n_rows, n_cols))
+#n_states = int((lambda x,y : sum([factorial(x*y)/factorial(k) for k in np.arange(x*y +1)]))(n_rows, n_cols))
 
 x,y = n_rows, n_cols
 #print(sum([factorial(x)/factorial(x*y) for x in np.arange(x*y +1)]))
@@ -27,4 +27,28 @@ x,y = n_rows, n_cols
 
 n_actions = n_cols
 print([n_states, n_actions])
-Q_TABLE = np.zeros([n_states, n_actions])
+Q_TABLE = {}#np.zeros([n_states, n_actions])
+
+def init_Q_player(player = 1, alpha = 0.3, epsilon = 0.2, gamma = 0.9):
+    Q_TABLE = {}
+    alpha = alpha
+    epsilon = epsilon
+    gamma = gamma
+    return Q_TABLE
+
+def getQ(Q_TABLE, state, action):
+    if(Q_TABLE.get((state,action)) == None):
+        Q_TABLE[(state,action)] = 1
+    return (Q_TABLE[(state,action)])
+
+
+
+
+
+
+
+
+
+
+
+    
