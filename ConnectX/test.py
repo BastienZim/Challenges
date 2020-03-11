@@ -23,7 +23,7 @@ class ConnectX(gym.Env):
     def __init__(self):
         self.env = make("connectx", debug=True)
         self.trainer = self.env.train([None, "random"])
-        
+
         # Define required gym fields (examples):
         config = self.env.configuration
         self.action_space = gym.spaces.Discrete(config.columns)
@@ -31,10 +31,10 @@ class ConnectX(gym.Env):
 
     def step(self, action):
         return self.trainer.step(action)
-    
+
     def reset(self):
         return self.trainer.reset()
-    
+
     def render(self, **kwargs):
         return self.env.render(**kwargs)
 
