@@ -4,16 +4,6 @@ import numpy as np
 #import matplotlib.pyplot as plt
 #import seaborn as sns
 from math import factorial
-'''
-import torch
-import torch.nn.functional as F
-from torch import nn, optim
-from torch.utils.data.sampler import SubsetRandomSampler
-from torchvision import transforms, models
-'''
-#from sklearn.model_selection import train_test_split
-#from sklearn.metrics import confusion_matrix
-#from sklearn.utils.multiclass import unique_labels
 
 #from tqdm import tqdm
 
@@ -21,13 +11,8 @@ n_rows, n_cols = 5,6
 #number of the states the board can be in.
 #n_states = int((lambda x,y : sum([factorial(x*y)/factorial(k) for k in np.arange(x*y +1)]))(n_rows, n_cols))
 
-x,y = n_rows, n_cols
-#print(sum([factorial(x)/factorial(x*y) for x in np.arange(x*y +1)]))
-#print([factorial(x)/factorial(x*y) for x in np.arange(x*y +1)])
-
 n_actions = n_cols
-#print([n_states, n_actions])
-Q_TABLE = {}#np.zeros([n_states, n_actions])
+
 
 def init_Q_player(player = 1, alpha = 0.3, epsilon = 0.2, gamma = 0.9):
     Q_TABLE = {}
@@ -46,13 +31,22 @@ def getQ(Q_TABLE, state, action):
 
 def eps_greedy_Qlearning(S, A, alpha, gamma, Q_TABLE):
     if (eps_greedy):
+
+
+        #first phase : we train
         for match in learning_match:
             record = getMatchRecord()#maybe do it along the way
             for state in record:
                 myRole = getCurrentRole()
                 reward = getReward(s,a)#s' is terminal state, getGoal(s',myrole):0
-                Q_s_a = getQ(Q[player], s, a)
-                Q[player][(state,action)] = (1-alpha)*Q_TABLE(my_role, s, a)+alpha*(reward + gamma* max(Q_TABLE(my_role, s_, a_)))#the max est selon a' ; s_ et a_ sont s' et a' 
+                # for reward see function defined in ./connect4.py
+
+                s_, a_ = ????#TODO: find corresponding values for terminal state and terminal action.
+                Q[player][(state,action)] = (1-alpha)*getQ(Q[player], s, a)+alpha*(reward + gamma* max(getQ(Q[player], s_, a_)))#the max est selon a' ; s_ et a_ sont s' et a'
+
+
+
+        #second phase : we select the action
         selected = False
         expected_scope = 0
         for q_myrole in Q_TABLE(my_role, S, A):#q_myrole(s,a) in Q_myrole(S,A):
@@ -74,4 +68,3 @@ def init_Game():
 #getQ(Q[player], s, a)
 
 
-    
