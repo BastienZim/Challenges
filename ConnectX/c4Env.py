@@ -12,9 +12,9 @@ class CustomEnv(gym.Env):
 
 
     self.action_space = spaces.Discrete(N_DISCRETE_ACTIONS)    # Example for using image as input:
-    
 
-    
+
+
     self.observation_space = spaces.Box(low=0, high=255, shape=
                     (HEIGHT, WIDTH, N_CHANNELS), dtype=np.uint8)
 

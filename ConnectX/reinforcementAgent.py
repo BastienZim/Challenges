@@ -42,17 +42,17 @@ def getQ(Q_TABLE, state, action):
     return (Q_TABLE[(state,action)])
 
 
-
-#TODO:adapt Q_table function, getReward, getCurrentRole, random selection, parameters initialisation
+#TODO:adapt Q_table function, getReward, getCurrentRole, random selection
 
 def eps_greedy_Qlearning(S, A, alpha, gamma, Q_TABLE):
     if (eps_greedy):
         for match in learning_match:
-            record = getMatchRecord()
+            record = getMatchRecord()#maybe do it along the way
             for state in record:
                 myRole = getCurrentRole()
                 reward = getReward(s,a)#s' is terminal state, getGoal(s',myrole):0
-                Q_TABLE(my_role, s, a) = (1-alpha)*Q_TABLE(my_role, s, a)+alpha*(reward + gamma* max(Q_TABLE(my_role, s_, a_)))#the max est selon a' ; s_ et a_ sont s' et a' 
+                Q_s_a = getQ(Q[player], s, a)
+                Q[player][(state,action)] = (1-alpha)*Q_TABLE(my_role, s, a)+alpha*(reward + gamma* max(Q_TABLE(my_role, s_, a_)))#the max est selon a' ; s_ et a_ sont s' et a' 
         selected = False
         expected_scope = 0
         for q_myrole in Q_TABLE(my_role, S, A):#q_myrole(s,a) in Q_myrole(S,A):
@@ -66,9 +66,12 @@ def eps_greedy_Qlearning(S, A, alpha, gamma, Q_TABLE):
         selected_action = random()
     return selected_action
 
-
-
-
+def init_Game():
+    alpha, gamma, epsilon = 0.3,0.9,0.2
+    #Note we can have different parameters for player 1 and player 2.
+    Q = {1: init_Q_player(1, alpha , epsilon, gamma), 2: init_Q_player(2, alpha , epsilon, gamma)}
+    getQ(Q[player], s, a)
+#getQ(Q[player], s, a)
 
 
     
